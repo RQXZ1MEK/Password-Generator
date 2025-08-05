@@ -5,14 +5,22 @@ import os
 
 def mdp_dmd_user():
     os.system('clear')
-    longueur = int(input("Longueur du Mot De Passe: "))
-    inclure_symbole = input("Inclure des Symboles ? o/n (Recommandé !)").strip()
+    longueur = int(input("Password Length: "))
+    os.system('clear')
     caracteres = string.ascii_letters + string.digits
-    if inclure_symbole.lower() == "o":
-      caracteres += string.punctuation
+    while True: 
+        inclure_symbole = input("Include The Symbols ? y/n (Recommended !)").strip() 
+        if inclure_symbole == "y":
+          caracteres += string.punctuation
+          break
+        elif inclure_symbole == "n":
+          caracteres
+          break
+        else:
+          os.system('clear')
     mdp = "".join(random.choice(caracteres) for _ in range (longueur))
     os.system('clear')
-    print("Mot De Passe Généré :" , mdp)
+    print("Password Generated :" , mdp)
     pause_menu()
     
 
@@ -21,8 +29,7 @@ def mdp_gen_16cara():
    caracters = string.ascii_letters + string.digits + string.punctuation
    longueur = 16
    mdp = "".join(random.choice(caracters) for _ in range (longueur))
-   os.system('clear')
-   print("\n Mot de Passe (16 caractères) :", mdp)
+   print("\n Password (16 caracters) :", mdp)
    pause_menu()
 
 def menu():
@@ -37,9 +44,9 @@ _____                                   _   _____                           _
 \_|  \__,_|___/___/ \_/\_/ \___/|_|  \__,_|  \____/\___|_| |_|\___|_|  \__,_|\__\___/|_|      
                                                                                         
 """)
-     print("1.Générer Mot de Passe Personnalisé.")
-     print("2.Générer un Mot de Passe sécurisé.")
-     print("3.Quitter.")
+     print("1.Generate Password Customizable.")
+     print("2.Generate Password Secure.")
+     print("3.Exit.")
      choix = input(":").strip().lower()
      if choix == "1":
       mdp_dmd_user()
@@ -49,11 +56,10 @@ _____                                   _   _____                           _
       os.system('clear')
       break
      else:
-      print("Choix invalide, Entre 1,2 ou 3 ")
-
+       os.system('clear')
 def pause_menu():
-  choix = input("\nContinuer ? o/n :").strip().lower()
-  if choix == 'o':
+  choix = input("\nContinue ? y/n :").strip().lower()
+  if choix == 'y':
     os.system('clear')
     return
   else: 
