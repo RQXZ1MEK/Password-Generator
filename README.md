@@ -13,5 +13,5 @@ A simple and customizable password generator built using Python.
 
 1. Run the Python script:
 2. ```bash
-   python3 passwdgen.py
+   python3 Passwdgen.py
 
