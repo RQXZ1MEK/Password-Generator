@@ -11,6 +11,7 @@ def clear():
 
 def mdp_dmd_user():
     clear()
+    nom_mdp = input("Nom du mot de passe (ex: YouTube, Gmail): ").strip()
     longueur = int(input("Longueur du Mot De Passe: "))
     inclure_symbole = input("Inclure des Symboles ? o/n (Recommandé !)").strip()
     caracteres = string.ascii_letters + string.digits
@@ -19,18 +20,19 @@ def mdp_dmd_user():
     mdp = "".join(random.choice(caracteres) for _ in range (longueur))
     clear()
     print("Mot De Passe Généré :" , mdp)
-    historique(mdp, "Personnalisé", longueur)
+    historique(mdp, nom_mdp, "Personnalisé", longueur)
     pause_menu()
     
 
 def mdp_gen_16cara():
    clear()
+   nom_mdp = input("Nom du mot de passe (ex: YouTube, Gmail): ").strip()
    caracters = string.ascii_letters + string.digits + string.punctuation
    longueur = 16
    mdp = "".join(random.choice(caracters) for _ in range (longueur))
    clear()
    print("\n Mot de Passe (16 caractères) :", mdp)
-   historique(mdp, "Automatique", longueur)
+   historique(mdp, nom_mdp, "Automatique", longueur)
    pause_menu()
 
 def menu():
@@ -71,10 +73,10 @@ def pause_menu():
     return
   else: exit()
 
-def historique(mdp, type_label, longueur):
+def historique(mdp, type_label,nom_mdp, longueur):
   """Ajoute une ligne d'historique au fichier HISTORY_FILE."""
   timestamp = datetime.now().isoformat(sep=' ', timespec='seconds')
-  line = f"{timestamp} | {type_label} | {longueur} | {mdp}\n"
+  line = f"{timestamp} | {type_label} | {longueur} |{nom_mdp} => {mdp}\n"
     # Mode 'a' pour append, création si n'existe pas
   with open(HISTORY_FILE, "a", encoding="utf-8") as f:
         f.write(line)
