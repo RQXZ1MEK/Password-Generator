@@ -8,6 +8,8 @@ A simple and customizable password generator built using Python.
 - Choose if you want:
   - Symbols
 - Clean interface
+- Show History
+- Delete History
 
 ## 🧠 How to Use
 
