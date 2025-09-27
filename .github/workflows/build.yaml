@@ -1,39 +1,36 @@
-name: Build and Commit EXE
+name: Build Windows EXE
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:  # pour pouvoir lancer manuellement
+    branches:
+      - main
+  pull_request:
 
 jobs:
   build:
-    runs-on: windows-latest  # Windows pour faire l'exe
+    runs-on: windows-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install PyInstaller
-        run: pip install pyinstaller
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
 
       - name: Build EXE with PyInstaller
-        run: pyinstaller --onefile passwdgenwind.py
-
-      - name: Move EXE to repo folder
         run: |
-          mkdir -Force build_output
-          Copy-Item dist\passwdgenwind.exe build_output\passwdgenwind.exe
+          pyinstaller --onefile passwdgenwind.py
+        shell: bash
 
-      - name: Commit EXE back to repo
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add build_output/passwdgenwind.exe
-          git commit -m "Add built executable [skip ci]" || echo "No changes to commit"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: passwdgenwind-exe
+          path: dist/passwdgenwind.exe
