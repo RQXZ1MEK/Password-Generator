@@ -1,35 +1,39 @@
-name: Build EXE with PyInstaller
+name: Build and Commit EXE
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ "main" ]
+  workflow_dispatch:  # pour pouvoir lancer manuellement
 
 jobs:
   build:
-    runs-on: windows-2022
-
+    runs-on: windows-latest  # Windows pour faire l'exe
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      - name: Build EXE with PyInstaller
+        run: pyinstaller --onefile Passwdgen.py
+
+      - name: Move EXE to repo folder
         run: |
-          pip install --upgrade pip
-          pip install pyinstaller
+          mkdir -Force build_output
+          Copy-Item dist\Passwdgen.exe build_output\Passwdgen.exe
 
-      - name: Build EXE
+      - name: Commit EXE back to repo
         run: |
-          pyinstaller --onefile Passwdgen.py
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Password-Generator-EXE
-          path: dist/Passwdgen.exe
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add build_output/Passwdgen.exe
+          git commit -m "Add built executable [skip ci]" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
