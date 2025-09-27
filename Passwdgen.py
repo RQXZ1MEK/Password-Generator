@@ -6,18 +6,6 @@ import secrets
 from datetime import datetime
 
 HISTORY_FILE = "mdp.txt"
-
-def clear():
-    os.system('clear')
-
-#!/usr/bin/env python3
-import random
-import string
-import os
-import secrets
-from datetime import datetime
-
-HISTORY_FILE = "mdp.txt"
 EXCLUDE_CHARS = "\"'\\ `;:/|&$"   # caractères à exclure par défaut
 
 def clear():
