@@ -2,6 +2,7 @@
 import random
 import string
 import os
+import secrets
 from datetime import datetime
 
 HISTORY_FILE = "mdp.txt"
@@ -9,34 +10,113 @@ HISTORY_FILE = "mdp.txt"
 def clear():
     os.system('clear')
 
+#!/usr/bin/env python3
+import random
+import string
+import os
+import secrets
+from datetime import datetime
+
+HISTORY_FILE = "mdp.txt"
+EXCLUDE_CHARS = "\"'\\ `;:/|&$"   # caractères à exclure par défaut
+
+def clear():
+    os.system('clear')
+
+def generate_password(length=16,
+                      require_lower=True, require_upper=True,
+                      require_digits=True, require_symbols=True,
+                      exclude_chars=""):
+    lower = string.ascii_lowercase
+    upper = string.ascii_uppercase
+    digits = string.digits
+    symbols = string.punctuation
+
+    sets = []
+    pool = ""
+
+    if require_lower:
+        sets.append(lower); pool += lower
+    if require_upper:
+        sets.append(upper); pool += upper
+    if require_digits:
+        sets.append(digits); pool += digits
+    if require_symbols:
+        sets.append(symbols); pool += symbols
+
+    if not sets:
+        pool = lower + upper + digits + symbols
+
+    if exclude_chars:
+        exclude_set = set(exclude_chars)
+        pool = ''.join(ch for ch in pool if ch not in exclude_set)
+        sets = [''.join(ch for ch in s if ch not in exclude_set) for s in sets]
+
+    if not pool:
+        raise ValueError("Pool vide après exclusion")
+
+    min_required = len([s for s in sets if s])
+    if length < min_required:
+        raise ValueError(f"Longueur trop courte : minimum requis = {min_required}")
+
+    # garantir 1 char de chaque catégorie requise
+    password_chars = [secrets.choice(s) for s in sets if s]
+
+    # compléter le reste
+    for _ in range(length - len(password_chars)):
+        password_chars.append(secrets.choice(pool))
+
+    # mélange
+    secrets.SystemRandom().shuffle(password_chars)
+    return ''.join(password_chars)
+
 def mdp_dmd_user():
     clear()
     nom_mdp = input("Nom du mot de passe (ex: YouTube, Gmail): ").strip()
-    longueur = int(input("Longueur du Mot De Passe: "))
-    inclure_symbole = input("Inclure des Symboles ? o/n (Recommandé !)").strip()
-    caracteres = string.ascii_letters + string.digits
-    if inclure_symbole.lower() == "o":
-      caracteres += string.punctuation
-    mdp = "".join(random.choice(caracteres) for _ in range (longueur))
+    try:
+        longueur = int(input("Longueur du Mot De Passe: ").strip())
+    except ValueError:
+        print("Entrée invalide : entre un nombre entier.")
+        pause_menu()
+        return
+
+    inclure_symbole = input("Inclure des Symboles ? o/n (Recommandé !) : ").strip().lower()
+
+    try:
+        mdp = generate_password(length=longueur,
+                                require_lower=True,
+                                require_upper=True,
+                                require_digits=True,
+                                require_symbols=(inclure_symbole == 'o'),
+                                exclude_chars=EXCLUDE_CHARS)
+    except ValueError as e:
+        print("Erreur :", e)
+        pause_menu()
+        return
+
     clear()
-    print("Mot De Passe Généré :" , mdp)
+    print(f"Mot De Passe Généré ({nom_mdp}): {mdp}")
     historique(mdp, nom_mdp, "Personnalisé", longueur)
     pause_menu()
-    
 
 def mdp_gen_16cara():
-   clear()
-   nom_mdp = input("Nom du mot de passe (ex: YouTube, Gmail): ").strip()
-   caracters = string.ascii_letters + string.digits + string.punctuation
-   longueur = 16
-   mdp = "".join(random.choice(caracters) for _ in range (longueur))
-   clear()
-   print("\n Mot de Passe (16 caractères) :", mdp)
-   historique(mdp, nom_mdp, "Automatique", longueur)
-   pause_menu()
+    clear()
+    nom_mdp = input("Nom du mot de passe (ex: YouTube, Gmail): ").strip()
+    longueur = 16
+    mdp = generate_password(length=longueur,
+                            require_lower=True,
+                            require_upper=True,
+                            require_digits=True,
+                            require_symbols=True,
+                            exclude_chars=EXCLUDE_CHARS)
+    clear()
+    print(f"\n Mot de Passe (16 caractères) ({nom_mdp}): {mdp}")
+    historique(mdp, nom_mdp, "Automatique", longueur)
+    pause_menu()
 
 def menu():
    while True:
+     clear()
      print("""
 _____                                   _   _____                           _             
 | ___ \                                 | | |  __ \                         | |            
@@ -67,20 +147,24 @@ _____                                   _   _____                           _
       print("Choix invalide, Entre 1,2,3,4 ou 5.")
 
 def pause_menu():
-  while True:   
+  while True:
     choix = input("\nContinuer ? o/n :").strip().lower()
-      if choix == 'o':
+    if choix == 'o':
         clear()
         return
-      else: exit()
+    elif choix == 'n':
+        clear()
+        exit()
+    else:
+        print("Choix invalide, Entre o ou n.")
 
-def historique(mdp, type_label,nom_mdp, longueur):
+def historique(mdp, nom_mdp, type_label, longueur):
   """Ajoute une ligne d'historique au fichier HISTORY_FILE."""
   timestamp = datetime.now().isoformat(sep=' ', timespec='seconds')
-  line = f"{timestamp} | {type_label} | {longueur} |{nom_mdp} => {mdp}\n"
-    # Mode 'a' pour append, création si n'existe pas
+  line = f"{timestamp} | {type_label} | Longueur = {longueur} |{nom_mdp} => {mdp}\n"
+  # Mode 'a' pour append, création si n'existe pas
   with open(HISTORY_FILE, "a", encoding="utf-8") as f:
-        f.write(line)
+    f.write(line)
     
 def voir_historique():
     clear()
@@ -120,6 +204,6 @@ def effacer_historique():
         print("Suppression annulée.")
     pause_menu()
 
-     
+   
 if __name__ == "__main__":
  menu()
