@@ -67,11 +67,12 @@ _____                                   _   _____                           _
       print("Choix invalide, Entre 1,2,3,4 ou 5.")
 
 def pause_menu():
-  choix = input("\nContinuer ? o/n :").strip().lower()
-  if choix == 'o':
-    clear()
-    return
-  else: exit()
+  while True:   
+    choix = input("\nContinuer ? o/n :").strip().lower()
+      if choix == 'o':
+        clear()
+        return
+      else: exit()
 
 def historique(mdp, type_label,nom_mdp, longueur):
   """Ajoute une ligne d'historique au fichier HISTORY_FILE."""
